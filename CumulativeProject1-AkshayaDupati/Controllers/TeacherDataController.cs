@@ -24,6 +24,7 @@ namespace CumulativeProject1_AkshayaDupati.Controllers
         /// A list of teachers with teacherid, teacherfname and teacherlname
         /// </returns>
 
+
         [HttpGet]
         [Route("api/TeacherData/ListTeachers/{SearchKey?}")]
         public List<Teacher> ListTeachers(string SearchKey = null)
@@ -42,7 +43,7 @@ namespace CumulativeProject1_AkshayaDupati.Controllers
 
             string query = "SELECT * FROM TEACHERS";
 
-            if(SearchKey != null)
+            if (SearchKey != null)
             {
                 query = query + " where lower(teacherfname) = lower(@key)";
                 cmd.Parameters.AddWithValue("@key", SearchKey);
@@ -71,6 +72,76 @@ namespace CumulativeProject1_AkshayaDupati.Controllers
 
             return Teachers;
         }
+
+        /* ------------------ INITIATIVE TRY - NOT WORKKING CODE ------------------------- */
+        /* ------------------ To sort the teachers based on salary ----------------------- */
+
+        /* [HttpGet]
+        [Route("api/TeacherData/ListTeachers/{SearchKey?}&{order?}")]
+        public List<Teacher> ListTeachers(string SearchKey = null, string order = null)
+        {
+
+            if (SearchKey != null && SearchKey != "")
+            {
+                Debug.WriteLine("Hey there! Search key is present! ", SearchKey);
+            }
+
+            MySqlConnection Conn = School.AccessDatabase();
+
+            Conn.Open();
+
+            MySqlCommand cmd = Conn.CreateCommand();
+
+            string query = "";
+
+            // IF ELSE condition to match the search key and order combination 
+
+            if (order == null && (SearchKey == null || SearchKey == ""))
+            {
+                query = "select * from teachers";
+            }
+            else if(order != null && (SearchKey == null || SearchKey == ""))
+            {
+                query = "select * from teachers order by teachers.salary " + order;
+            }
+            else if (order == null && (SearchKey!= null && SearchKey != ""))
+            {
+                query = "select * from teachers where lower(teacherfname) = lower(@key)";
+                cmd.Parameters.AddWithValue("@key", SearchKey);
+                cmd.Prepare();
+            }
+            if (SearchKey != null && SearchKey != "" && order != null)
+            {
+                query = "select * from teachers where lower(teacherfname) = lower(@key) order by teachers.salary " + order;
+                cmd.Parameters.AddWithValue("@key", SearchKey);
+                cmd.Prepare();
+            }
+            
+            cmd.CommandText = query;
+
+            MySqlDataReader ResultSet = cmd.ExecuteReader();
+
+            List<Teacher> Teachers = new List<Teacher> { };
+
+            while (ResultSet.Read())
+            {
+
+                Teacher NewTeacher = new Teacher();
+
+                NewTeacher.TeacherId = Convert.ToInt32(ResultSet["teacherid"]);
+                NewTeacher.TeacherFName = ResultSet["teacherfname"].ToString();
+                NewTeacher.TeacherLName = ResultSet["teacherlname"].ToString();
+
+                Teachers.Add(NewTeacher);
+            }
+
+            Conn.Close();
+
+            return Teachers;
+        }
+        */
+
+        /* ------------------ INITIATIVE TRY - NOT WORKKING CODE ------------------------- */
 
         /// <summary>
         /// The FindTeacher function returns data of that particular teacher id.
